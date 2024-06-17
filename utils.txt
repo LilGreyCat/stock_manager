@@ -6,12 +6,12 @@ Database SQL:
         -Stocks
         -Sales
 
-Pour le moment l'objectif est de renseigner les stocks phytosanitaires de l'entreprise, cela signifie que l'utilisateur doit renseigner les stocks au demarrage 
-et si l'utilisateur utilise un produit ce dernier doit rentrer les quantités utilisées. Si le produit en sortie est arrivé à un certain seuil(ou pourcentage), l'utilisateur recoit une alerte 
-l'avertissant de la quatité restante exacte et lui proposera de passer commande.
-Si plusieurs lieux de stockage son renseignés sur l'entreprise, l'appli se doit de préciser combien de stock de ce produit sont disponibles sur chaque endroit.
+    Pour le moment l'objectif est de renseigner les stocks phytosanitaires de l'entreprise, cela signifie que l'utilisateur doit rentrer ses stocks au demarrage.
+Si l'utilisateur utilise un produit ce dernier doit rentrer les quantités utilisées. Si le produit en sortie est arrivé à un certain seuil(ou pourcentage) dépendant de la frequence d'utilisation, l'utilisateur recoit une alerte 
+l'avertissant de la quantité restante exacte et lui proposera de passer commande.
+Si plusieurs lieux de stockage sont renseignés sur un même produit, l'appli se doit de préciser combien de stock de ce produit sont disponibles sur chaque site.
 
-L'utilisateur pourra renseigner toute les données qu'il souhaite. Et aura des fiches techniques en fonction de ses besoins.Ou alors des rappels
+
 
 CEREALES/OLEAGINEUX:
     Herbicides - Fongicides - Insecticides - Semences
