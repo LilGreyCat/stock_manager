@@ -1,3 +1,5 @@
+// handlers/stocks_handler.go
+
 package handlers
 
 import (
@@ -13,12 +15,17 @@ import (
 func CreateStock(c *gin.Context) {
 	var stock models.Stock
 	if err := c.ShouldBindJSON(&stock); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if err := validate.Struct(stock); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := database.CreateStock(stock.ProductID, stock.SiteID, stock.Quantity, stock.UnitOfMeasure); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create stock"})
 		return
 	}
 
@@ -29,7 +36,7 @@ func CreateStock(c *gin.Context) {
 func GetStocks(c *gin.Context) {
 	stocks, err := database.GetStocks()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve stocks"})
 		return
 	}
 	c.JSON(http.StatusOK, stocks)
@@ -45,7 +52,7 @@ func GetStockByID(c *gin.Context) {
 
 	stock, err := database.GetStockByID(uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve stock"})
 		return
 	}
 	if stock == nil {
@@ -53,4 +60,47 @@ func GetStockByID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, stock)
+}
+
+// UpdateStock updates an existing stock entry
+func UpdateStock(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid stock ID"})
+		return
+	}
+
+	var updatedStock models.Stock
+	if err := c.ShouldBindJSON(&updatedStock); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if err := validate.Struct(updatedStock); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := database.UpdateStock(uint(id), updatedStock); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update stock"})
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedStock)
+}
+
+// DeleteStock deletes a stock entry by its ID
+func DeleteStock(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid stock ID"})
+		return
+	}
+
+	if err := database.DeleteStock(uint(id)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete stock"})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, gin.H{"message": "Stock deleted successfully"})
 }

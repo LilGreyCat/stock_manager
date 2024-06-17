@@ -7,10 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
-
-var validate = validator.New()
 
 // CreateProduct creates a new product
 func CreateProduct(c *gin.Context) {

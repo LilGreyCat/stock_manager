@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 type Product struct {
 	ID       uint    `gorm:"primaryKey" json:"id"`
 	Name     string  `gorm:"not null" json:"name" validate:"required"`
@@ -14,11 +16,11 @@ type Site struct {
 }
 
 type Stock struct {
-	ID            uint    `gorm:"primaryKey"`
-	ProductID     uint    `gorm:"not null"`
-	SiteID        uint    `gorm:"not null"`
-	Quantity      float64 `gorm:"not null"`
-	UnitOfMeasure string  `gorm:"not null"`
+	gorm.Model
+	ProductID     uint    `gorm:"not null" validate:"required"`
+	SiteID        uint    `gorm:"not null" validate:"required"`
+	Quantity      float64 `gorm:"not null" validate:"required,gt=0"`
+	UnitOfMeasure string  `gorm:"not null" validate:"required"`
 	Product       Product `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Site          Site    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }

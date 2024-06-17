@@ -132,27 +132,61 @@ func DeleteSite(id uint) error {
 	return nil
 }
 
-// ############################## STOCKS ######################################
+// ############################### STOCKS #######################################
 
 // CreateStock creates a new stock entry in the database
 func CreateStock(productID, siteID uint, quantity float64, unitOfMeasure string) error {
 	stock := models.Stock{ProductID: productID, SiteID: siteID, Quantity: quantity, UnitOfMeasure: unitOfMeasure}
-	return DB.Create(&stock).Error
+
+	// Validate the stock before creating
+	if err := validate.Struct(stock); err != nil {
+		return fmt.Errorf("validation error: %w", err)
+	}
+
+	if err := DB.Create(&stock).Error; err != nil {
+		return fmt.Errorf("failed to create stock: %w", err)
+	}
+	return nil
 }
 
 // GetStocks retrieves all stock entries from the database
 func GetStocks() ([]models.Stock, error) {
 	var stocks []models.Stock
-	err := DB.Preload("Product").Preload("Site").Find(&stocks).Error
-	return stocks, err
+	if err := DB.Preload("Product").Preload("Site").Find(&stocks).Error; err != nil {
+		return nil, fmt.Errorf("failed to retrieve stocks: %w", err)
+	}
+	return stocks, nil
 }
 
 // GetStockByID retrieves a stock entry by its ID
 func GetStockByID(id uint) (*models.Stock, error) {
 	var stock models.Stock
-	err := DB.Preload("Product").Preload("Site").First(&stock, id).Error
-	if err != nil {
-		return nil, err
+	if err := DB.Preload("Product").Preload("Site").First(&stock, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to retrieve stock: %w", err)
 	}
 	return &stock, nil
+}
+
+// UpdateStock updates an existing stock entry in the database
+func UpdateStock(id uint, updatedStock models.Stock) error {
+	// Validate the updated stock before updating
+	if err := validate.Struct(updatedStock); err != nil {
+		return fmt.Errorf("validation error: %w", err)
+	}
+
+	if err := DB.Model(&models.Stock{}).Where("id = ?", id).Updates(updatedStock).Error; err != nil {
+		return fmt.Errorf("failed to update stock: %w", err)
+	}
+	return nil
+}
+
+// DeleteStock deletes a stock entry by its ID from the database
+func DeleteStock(id uint) error {
+	if err := DB.Delete(&models.Stock{}, id).Error; err != nil {
+		return fmt.Errorf("failed to delete stock: %w", err)
+	}
+	return nil
 }
