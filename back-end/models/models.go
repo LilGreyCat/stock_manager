@@ -1,5 +1,11 @@
 package models
 
+type User struct {
+	ID       uint   `gorm:"primaryKey"`
+	Username string `gorm:"unique"`
+	Password string
+}
+
 type Product struct {
 	ID       uint    `gorm:"primaryKey"`
 	Name     string  `gorm:"not null"`

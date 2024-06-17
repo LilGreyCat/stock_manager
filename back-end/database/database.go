@@ -24,3 +24,18 @@ func InitializeDatabase() error {
 	log.Println("Database setup complete")
 	return nil
 }
+
+func InitializeUserDatabase() error {
+	db, err := gorm.Open(sqlite.Open("users.db"), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+
+	if err := db.AutoMigrate(&models.User{}); err != nil {
+		return err
+	}
+
+	DB = db
+	log.Println("User database setup complete")
+	return nil
+}

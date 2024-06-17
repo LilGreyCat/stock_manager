@@ -72,3 +72,49 @@ func GetStockByID(id uint) (*models.Stock, error) {
 	}
 	return &stock, nil
 }
+
+//***********************************************//
+
+// CreateUser creates a new user in the database
+func CreateUser(username, password string) error {
+	user := models.User{Username: username, Password: password}
+	return DB.Create(&user).Error
+}
+
+// GetUserByUsername retrieves a user by its username
+func GetUserByUsername(username string) (*models.User, error) {
+	var user models.User
+	err := DB.First(&user, "username = ?", username).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetUserByID retrieves a user by its ID
+func GetUserByID(id uint) (*models.User, error) {
+	var user models.User
+	err := DB.First(&user, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// UpdateUser updates a user in the database
+func UpdateUser(id uint, username, password string) error {
+	user, err := GetUserByID(id)
+	if err != nil {
+		return err
+	}
+	user.Username = username
+	user.Password = password
+	return DB.Save(&user).Error
+}
+
+// DeleteUser deletes a user from the database
+func DeleteUser(id uint) error {
+	return DB.Delete(&models.User{}, id).Error
+}
+
+//***********************************************//
