@@ -1,31 +1,79 @@
 package database
 
 import (
+	"fmt"
 	"stock_manager_back-end/models"
+
+	"github.com/go-playground/validator/v10"
+	"gorm.io/gorm"
 )
+
+var validate *validator.Validate
+
+func init() {
+	validate = validator.New()
+}
+
+// ############################### PRODUCTS #######################################
 
 // CreateProduct creates a new product in the database
 func CreateProduct(name, function string) error {
 	product := models.Product{Name: name, Function: function}
-	return DB.Create(&product).Error
+
+	// Validate the product before creating
+	if err := validate.Struct(product); err != nil {
+		return fmt.Errorf("validation error: %w", err)
+	}
+
+	if err := DB.Create(&product).Error; err != nil {
+		return fmt.Errorf("failed to create product: %w", err)
+	}
+	return nil
 }
 
 // GetProducts retrieves all products from the database
 func GetProducts() ([]models.Product, error) {
 	var products []models.Product
-	err := DB.Find(&products).Error
-	return products, err
+	if err := DB.Find(&products).Error; err != nil {
+		return nil, fmt.Errorf("failed to retrieve products: %w", err)
+	}
+	return products, nil
 }
 
 // GetProductByID retrieves a product by its ID
 func GetProductByID(id uint) (*models.Product, error) {
 	var product models.Product
-	err := DB.First(&product, id).Error
-	if err != nil {
-		return nil, err
+	if err := DB.First(&product, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to retrieve product: %w", err)
 	}
 	return &product, nil
 }
+
+// UpdateProduct updates an existing product in the database
+func UpdateProduct(id uint, updatedProduct models.Product) error {
+	// Validate the updated product before updating
+	if err := validate.Struct(updatedProduct); err != nil {
+		return fmt.Errorf("validation error: %w", err)
+	}
+
+	if err := DB.Model(&models.Product{}).Where("id = ?", id).Updates(updatedProduct).Error; err != nil {
+		return fmt.Errorf("failed to update product: %w", err)
+	}
+	return nil
+}
+
+// DeleteProduct deletes a product by its ID from the database
+func DeleteProduct(id uint) error {
+	if err := DB.Delete(&models.Product{}, id).Error; err != nil {
+		return fmt.Errorf("failed to delete product: %w", err)
+	}
+	return nil
+}
+
+// ############################### SITES #######################################
 
 // CreateSite creates a new site in the database
 func CreateSite(name string) error {
@@ -49,6 +97,8 @@ func GetSiteByID(id uint) (*models.Site, error) {
 	}
 	return &site, nil
 }
+
+// ############################## STOCKS ######################################
 
 // CreateStock creates a new stock entry in the database
 func CreateStock(productID, siteID uint, quantity float64, unitOfMeasure string) error {

@@ -1,10 +1,10 @@
 package models
 
 type Product struct {
-	ID       uint    `gorm:"primaryKey"`
-	Name     string  `gorm:"not null"`
-	Function string  `gorm:"not null"`
-	Stocks   []Stock `gorm:"foreignKey:ProductID"`
+	ID       uint    `gorm:"primaryKey" json:"id"`
+	Name     string  `gorm:"not null" json:"name" validate:"required"`
+	Function string  `gorm:"not null" json:"function" validate:"required"`
+	Stocks   []Stock `gorm:"foreignKey:ProductID" json:"stocks,omitempty"`
 }
 
 type Site struct {
