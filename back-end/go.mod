@@ -1,4 +1,4 @@
-module stock_manager_backend
+module stock_manager_back-end
 
 go 1.21.5
 
