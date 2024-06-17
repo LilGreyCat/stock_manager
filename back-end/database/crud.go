@@ -78,24 +78,58 @@ func DeleteProduct(id uint) error {
 // CreateSite creates a new site in the database
 func CreateSite(name string) error {
 	site := models.Site{Name: name}
-	return DB.Create(&site).Error
+
+	// Validate the site before creating
+	if err := validate.Struct(site); err != nil {
+		return fmt.Errorf("validation error: %w", err)
+	}
+
+	if err := DB.Create(&site).Error; err != nil {
+		return fmt.Errorf("failed to create site: %w", err)
+	}
+	return nil
 }
 
 // GetSites retrieves all sites from the database
 func GetSites() ([]models.Site, error) {
 	var sites []models.Site
-	err := DB.Find(&sites).Error
-	return sites, err
+	if err := DB.Find(&sites).Error; err != nil {
+		return nil, fmt.Errorf("failed to retrieve sites: %w", err)
+	}
+	return sites, nil
 }
 
 // GetSiteByID retrieves a site by its ID
 func GetSiteByID(id uint) (*models.Site, error) {
 	var site models.Site
-	err := DB.First(&site, id).Error
-	if err != nil {
-		return nil, err
+	if err := DB.First(&site, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to retrieve site: %w", err)
 	}
 	return &site, nil
+}
+
+// UpdateSite updates an existing site in the database
+func UpdateSite(id uint, updatedSite models.Site) error {
+	// Validate the updated site before updating
+	if err := validate.Struct(updatedSite); err != nil {
+		return fmt.Errorf("validation error: %w", err)
+	}
+
+	if err := DB.Model(&models.Site{}).Where("id = ?", id).Updates(updatedSite).Error; err != nil {
+		return fmt.Errorf("failed to update site: %w", err)
+	}
+	return nil
+}
+
+// DeleteSite deletes a site by its ID from the database
+func DeleteSite(id uint) error {
+	if err := DB.Delete(&models.Site{}, id).Error; err != nil {
+		return fmt.Errorf("failed to delete site: %w", err)
+	}
+	return nil
 }
 
 // ############################## STOCKS ######################################

@@ -8,9 +8,9 @@ type Product struct {
 }
 
 type Site struct {
-	ID     uint    `gorm:"primaryKey"`
-	Name   string  `gorm:"not null"`
-	Stocks []Stock `gorm:"foreignKey:SiteID"`
+	ID     uint    `gorm:"primaryKey" json:"id"`
+	Name   string  `gorm:"not null" json:"name" validate:"required"`
+	Stocks []Stock `gorm:"foreignKey:SiteID" json:"stocks,omitempty"`
 }
 
 type Stock struct {
