@@ -16,26 +16,35 @@ func main() {
 
 	router := gin.Default()
 
-	// Register routes for products
-	router.POST("/products", handlers.CreateProduct)
-	router.GET("/products", handlers.GetProducts)
-	router.GET("/products/:id", handlers.GetProductByID)
-	router.PUT("/products/:id", handlers.UpdateProduct)
-	router.DELETE("/products/:id", handlers.DeleteProduct)
+	product_gp := router.Group("/products")
+	{
+		// Register routes for products
+		product_gp.POST("/", handlers.CreateProduct)
+		product_gp.GET("/", handlers.GetProducts)
+		product_gp.GET("/:id", handlers.GetProductByID)
+		product_gp.PUT("/:id", handlers.UpdateProduct)
+		product_gp.DELETE("/:id", handlers.DeleteProduct)
+	}
 
 	// Register routes for sites
-	router.POST("/sites", handlers.CreateSite)
-	router.GET("/sites", handlers.GetSites)
-	router.GET("/sites/:id", handlers.GetSiteByID)
-	router.PUT("/sites/:id", handlers.UpdateSite)
-	router.DELETE("/sites/:id", handlers.DeleteSite)
+	sites_gp := router.Group("/sites")
+	{
+		sites_gp.POST("/", handlers.CreateSite)
+		sites_gp.GET("/", handlers.GetSites)
+		sites_gp.GET("/:id", handlers.GetSiteByID)
+		sites_gp.PUT("/:id", handlers.UpdateSite)
+		sites_gp.DELETE("/:id", handlers.DeleteSite)
+	}
 
 	// Register routes for stocks
-	router.POST("/stocks", handlers.CreateStock)
-	router.GET("/stocks", handlers.GetStocks)
-	router.GET("/stocks/:id", handlers.GetStockByID)
-	router.PUT("/stocks/:id", handlers.UpdateStock)
-	router.DELETE("/stocks/:id", handlers.DeleteStock)
+	stocks_gp := router.Group("/stocks")
+	{
+		stocks_gp.POST("/", handlers.CreateStock)
+		stocks_gp.GET("/", handlers.GetStocks)
+		stocks_gp.GET("/:id", handlers.GetStockByID)
+		stocks_gp.PUT("/:id", handlers.UpdateStock)
+		stocks_gp.DELETE("/:id", handlers.DeleteStock)
+	}
 
 	// Start the server
 	if err := router.Run(":8080"); err != nil {
