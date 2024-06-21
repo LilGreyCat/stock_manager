@@ -1,10 +1,12 @@
 package models
 
+import "gorm.io/gorm"
+
 type Product struct {
-	ID    uint
-	Name  string `json:"name" binding:"required"`
-	Unit  string `json:"unit" binding:"required"`
-	Type  string `json:"type" binding:"required"`
-	Stock string `json:"stock" binding:"required"`
-	Site  string `json:"site" binding:"required"`
+	gorm.Model
+	Name  string `gorm:"not null" json:"name"`
+	Unit  string `json:"unit"`
+	Type  string `gorm:"not null" json:"type"`
+	Stock string `gorm:"not null" json:"stock"`
+	Site  string `gorm:"not null" json:"site"`
 }
