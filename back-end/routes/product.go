@@ -11,8 +11,8 @@ func Products(router *gin.Engine) {
 
 	group := router.Group("/products")
 	{
-		group.GET("/", product.Get)
-		group.POST("/", product.Create)
+		group.GET("", product.Get)
+		group.POST("", product.Create)
 		group.PUT("/:id", product.Update)
 		group.DELETE("/:id", product.Delete)
 	}
