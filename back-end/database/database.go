@@ -4,7 +4,7 @@ import (
 	"log"
 	"stock_manager_back-end/models"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -21,12 +21,13 @@ var DB *gorm.DB
 // Finally, it assigns the database connection to the global variable DB and logs a message indicating that the database setup is complete.
 // It returns nil if everything is successful.
 func InitializeDatabase() error {
-	db, err := gorm.Open(sqlite.Open("farm_stock.db"), &gorm.Config{})
+	dsn := "gorm:gormdb123@tcp(127.0.0.1:3306)/stocks?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
-	if err := db.AutoMigrate(&models.Product{}, &models.Site{}, &models.Stock{}); err != nil {
+	if err := db.AutoMigrate(&models.Product{}); err != nil {
 		return err
 	}
 
