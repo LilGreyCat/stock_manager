@@ -27,8 +27,15 @@ func InitializeDatabase() error {
 		return err
 	}
 
-	if err := db.AutoMigrate(&models.Product{}); err != nil {
-		return err
+	err = db.AutoMigrate(
+		&models.ProductType{},
+		&models.Site{},
+		&models.Unit{},
+		&models.Product{},
+	)
+
+	if err != nil {
+		panic(err)
 	}
 
 	DB = db
