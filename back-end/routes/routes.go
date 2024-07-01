@@ -6,4 +6,7 @@ import (
 
 func Init(router *gin.Engine) {
 	Products(router)
+	ProductTypes(router)
+	Sites(router)
+	Units(router)
 }
